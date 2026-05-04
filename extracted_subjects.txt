@@ -1,0 +1,59 @@
+ 
+            Year           Subject  
+      
+First  year  -Arabic  language  -Mathematics  -Islamic  education  
+Second  year  -Arabic  language  -Mathematics  -Islamic  education  
+Third  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Scientific  and  Technological  Education  -History   
+Fourth  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Scientific  and  Technological  Education  -History   
+Fifth  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Scientific  and  Technological  Education  -History  &  Geography  -Civil  education   
+
+                     
+ 
+First  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Physics  -Natural  and  life  Science  -History  &  Geography  -Civil  education  
+Second  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Physics  -Natural  and  life  Science  -History  &  Geography  -Civil  education  
+Third  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Physics  -Natural  and  life  Science  -History  &  Geography  -Civil  education  
+Fourth  year  -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Physics  -Natural  and  life  Science  -History  &  Geography  -Civil  education  
+           
+First  year  —-------------------- Scientific  stream —-----------------------   -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -Physics  -Natural  and  life  Science  -History  &  Geography  —-------------------- Litureture  stream —-----------------------   -Arabic  language  -Mathematics  -Islamic  education  -French  language  -English  language  -History  &  Geography  
+Second  year  —-----------------------Science  Stream—-------------------------  -Natural  and  life  Science  
+
+ 
+ 
+-Physics  -Mathematics  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language   —----------------------Technical  Stream -----------------------  -Mechanical/Electrical/Process/Civil  engineering  -Physics  -Mathematics  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language   
+—--------------------Mathematics  Stream —---------------------  -Mathematics  -Physics  -Natural  and  life  Science  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  —--------------------Letters  &  Philosophy —--------------------  -Philosophy   -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  -Mathematics  —-----------------Management  &  Economics -----------------  -Economics  -Management  -Mathematics  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  —--------------------Foreign  Languages—----------------------  -German/Russian/Italian/Spanish  language  -French  language  -English  language  -Arabic  language  -History  &  Geography  -Islamic  education  -Mathematics  
+Third  year  —-----------------------Science  Stream—-------------------------  -Natural  and  life  Science  -Physics  -Mathematics  -Arabic  language  
+
+-History  &  Geography  -Islamic  education  -French  language  -English  language  -Philosophy    —-----------------------Technical  Stream —----------------------  -Mechanical/Electrical/Process/Civil  engineering  -Physics  -Mathematics  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  -Philosophy    
+—-------------------Mathematics  Stream —----------------------  -Mathematics  -Physics  -Natural  and  life  Science  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  -Philosophy   —--------------------Letters  &  Philosophy —--------------------  -Philosophy   -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  -Mathematics  —-----------------Management  &  Economics- -----------------  -Economics  -Management  -Mathematics  -Arabic  language  -History  &  Geography  -Islamic  education  -French  language  -English  language  -Philosophy   —--------------------Foreign  Languages—----------------------  -German/Russian/Italian/Spanish  language  -French  language  -English  language  -Arabic  language  -Philosophy   -History  &  Geography  -Islamic  education  -Mathematics  
+ 
+1st  year  of  preparatory  class  
+—------------------------ 1st  semester —------------------------  -ALG1  -ANA1  
+ 
+-ALSDS  -ARCHI1  -SYS1  -ELECT  -BWEB  -TEE  —------------------------ 2nd  semester —------------------------  -ANA2  -ALG2  -SYS2  -ALSDD  -ELECF1  -MECA  -TEO  -ANG1  
+2nd  year  of  preparatory  class  
+—------------------------ 1st  semester —------------------------  -ALG3  -ANA3  -SFSD  -ARCHI2  -PRST1  -ELECF2  -ECON  -ANG2  —------------------------ 2nd  semester —------------------------  -ANA4  -PRST2  -POO  -OOE  -SINF  -LOGM  -PRJT  -ANG3  
+1st  year  of  higher  class  
+—------------------------ 1st  semester —------------------------  -ANUM  -IGL  -ORGA  -RES1  -RO  -SYC  -THP  -English  —------------------------ 2nd  semester —------------------------  -ARCHI3  -BDD  -CPRJ  -MCSI  -PRJT  -RES2  -SEC  -SYC2  
+2nd  year  of  higher  class  
+—----------------------------
+SID
+—-------------------------------
+ —------------------------ 1st  semester —------------------------  -ANAD  -BDA  -CRP  
+
+-HPC  -INFOVIS  -MASD  -ML  -SGOV  -SIGA  -TSG  —------------------------ 2nd  semester —------------------------  -BI  -IMN  -IRIAD  -NLP  -PMSS  -RCR  -RV  -TOAI  
+—----------------------------
+SIQ
+—------------------------------
+ —------------------------ 1st  semester —------------------------  -ANAD  -COMPIL  -FAS  -RESA  -STAGE  -TPGO  -VCL  —------------------------ 2nd  semester —------------------------  -ALOG  -BDA  -OPTM  -PRJT  -SSR  -SYSR  
+—----------------------------
+SIL
+—-----------------------------
+ —------------------------ 1st  semester —------------------------  -ANAD  -COMPIL  -IHM  -MAGIL  -OUTILS  -PDC  -STAGE  -TPGO  -VCL  -WEB  —------------------------ 2nd  semester —------------------------  -ALOG  -BDA  -BDM  -ENTP  -IHM  -MBL1  -MBL2  -MNG  -QLOG  
+—----------------------------
+SIT
+—-----------------------------
+ —------------------------ 1st  semester —------------------------  -ANAD  -AQUA  -ASI  
+-BDA  -IHM  -MPSI  -SIAD  -SIGA  -TICO  —------------------------ 2nd  semester —------------------------  -AL  -AUDIT  -COFI  -CRM  -ERP  -FASI  -MSSI  -PRJT  -PRJT_SSI  -SIC  -URBA  
+3rd  year  of  higher  class  
+ 
+ 
