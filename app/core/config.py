@@ -8,6 +8,13 @@ class Settings(BaseSettings):
   # Application Settings
   access_token_expire_minutes: int = 30
   database_url: str = "postgresql://postgres:helloworld123456@localhost:5432/tutorly_db"
+  
+  @property
+  def get_database_url(self) -> str:
+      """Fixes Render's 'postgres://' prefix to 'postgresql://' for SQLAlchemy."""
+      if self.database_url and self.database_url.startswith("postgres://"):
+          return self.database_url.replace("postgres://", "postgresql://", 1)
+      return self.database_url
   debug: bool = False
 
   # Chatbot Configuration

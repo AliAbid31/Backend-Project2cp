@@ -6,11 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://neondb_owner:npg_gPOle6ILzyo4@ep-cool-river-alupwxo5-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+SQLALCHEMY_DATABASE_URL = settings.get_database_url
 
-
-
-# 2. Create the Engine without SQLite arguments
+# Create the Engine
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     pool_size=5,        # Keeps 5 connections open for speed
