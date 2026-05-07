@@ -52,6 +52,27 @@ def get_messages_between_users(db, user1_id: int, user2_id: int):
     ).order_by(Messages.timestamp).all()
     return [MessageOut.model_validate(message) for message in messages]
 
+def delete_message(db, message_id: int, user_id: int):
+    message = db.query(Messages).filter(Messages.id == message_id).first()
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    if message.sender_id != user_id:
+        raise HTTPException(status_code=403, detail="Cannot delete someone else's message")
+    db.delete(message)
+    db.commit()
+    return {"message": "Deleted successfully"}
+
+def update_message(db, message_id: int, user_id: int, new_content: str):
+    message = db.query(Messages).filter(Messages.id == message_id).first()
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    if message.sender_id != user_id:
+        raise HTTPException(status_code=403, detail="Cannot edit someone else's message")
+    message.content = new_content
+    db.commit()
+    db.refresh(message)
+    return MessageOut.model_validate(message)
+
 def get_user_conversations(db, user_id: int):
     """Get all conversations with ALL messages for this user"""
     # Get all unique users that this user has either sent or received messages from

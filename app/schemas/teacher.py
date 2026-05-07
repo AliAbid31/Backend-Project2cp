@@ -31,6 +31,7 @@ class TeacherOut(TeacherBase):
   geo_coordinates: Optional[str] = None
   certificates: list[CertificateOut] = []
   bio: Optional[str] = None
+  average_rating: Optional[float] = 0.0
 
   class Config:
     from_attributes = True

@@ -80,9 +80,9 @@ def create_booking(
 
 
 @router.get("/teacher/{teacher_id}", response_model=List[SessionOut])
-def get_teacher_sessions(teacher_id: int, db: Session = Depends(get_db)):
-    return crud_session.get_sessions_by_teacher(db, teacher_id)
+def get_teacher_sessions(teacher_id: int, upcoming_only: bool = False, db: Session = Depends(get_db)):
+    return crud_session.get_sessions_by_teacher(db, teacher_id, upcoming_only=upcoming_only)
 
 @router.get("/student/{student_id}", response_model=List[SessionOut])
-def get_student_sessions(student_id: int, db: Session = Depends(get_db)):
-    return crud_session.get_sessions_by_student(db, student_id)
+def get_student_sessions(student_id: int, upcoming_only: bool = False, db: Session = Depends(get_db)):
+    return crud_session.get_sessions_by_student(db, student_id, upcoming_only=upcoming_only)

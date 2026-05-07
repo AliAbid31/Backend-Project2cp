@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.models.users import User
 from app.models.teacher import Teacher
-from app.crud.crud_teacher import create_teacher, get_teacher, get_teachers, delete_teacher, delete_all_teachers, modify_password, modify_profile, update_payment_method
+from app.crud.crud_teacher import create_teacher, get_teacher, get_teachers, delete_teacher, delete_all_teachers, modify_password, modify_profile, update_payment_method, get_top_rated_teachers
 from typing import List
 from app.schemas.teacher import TeacherCreate, TeacherOut
 import os
@@ -18,9 +18,16 @@ router = APIRouter(
 PROFILE_UPLOAD_DIR = "uploads/profiles"
 os.makedirs(PROFILE_UPLOAD_DIR, exist_ok=True)
 
+CERT_UPLOAD_DIR = "uploads/certificates"
+os.makedirs(CERT_UPLOAD_DIR, exist_ok=True)
+
 @router.post("/", response_model=TeacherOut)
 def create_teacher_endpoint(teacher: TeacherCreate, db: Session = Depends(get_db)):
   return create_teacher(db, teacher)
+
+@router.get("/top-rated", response_model=List[TeacherOut])
+def get_top_rated_teachers_endpoint(limit: int = 3, db: Session = Depends(get_db)):
+  return get_top_rated_teachers(db, limit)
 
 @router.get("/{teacher_id}", response_model=TeacherOut)
 def get_teacher_endpoint(teacher_id: int, db: Session = Depends(get_db)):
@@ -97,3 +104,33 @@ async def upload_profile_picture(file: UploadFile = File(...)):
   base64_string = f"data:{content_type};base64,{b64_encoded}"
 
   return {"profile_picture": base64_string}
+
+
+@router.post("/upload-certificate")
+async def upload_certificate(file: UploadFile = File(...)):
+  content_type = (file.content_type or "").lower()
+  is_image = content_type.startswith("image/")
+  is_pdf = content_type == "application/pdf"
+  if not (is_image or is_pdf):
+    raise HTTPException(status_code=400, detail="Only image or PDF files are allowed")
+
+  original_name = file.filename or "certificate"
+  _, ext = os.path.splitext(original_name)
+  ext = (ext or "").lower()
+  if not ext:
+    ext = ".pdf" if is_pdf else ".jpg"
+
+  filename = f"{uuid4().hex}{ext}"
+  file_path = os.path.join(CERT_UPLOAD_DIR, filename)
+
+  with open(file_path, "wb") as out_file:
+    out_file.write(await file.read())
+
+  normalized = file_path.replace("\\", "/")
+  if not normalized.startswith("/"):
+    normalized = f"/{normalized}"
+
+  return {
+    "file_path": normalized,
+    "title": original_name,
+  }

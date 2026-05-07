@@ -108,3 +108,26 @@ def update_payment_method(db: Session, email: str, payment_method: str, payment_
     db.refresh(teacher)
     return teacher
   raise HTTPException(status_code=404, detail="Teacher not found")
+
+def get_top_rated_teachers(db: Session, limit: int = 3):
+    from app.models.evaluation import Evaluation
+    from sqlalchemy import desc
+    
+    # Calculate average rating for each teacher
+    results = db.query(
+        Teacher,
+        func.avg(Evaluation.note).label('average_rating')
+    ).join(Evaluation, Teacher.id == Evaluation.teacher_id)\
+    .group_by(Teacher.id)\
+    .order_by(desc('average_rating'))\
+    .limit(limit)\
+    .all()
+    
+    # Format results to include average_rating in the teacher object or return as pairs
+    top_teachers = []
+    for teacher, avg_rating in results:
+        # Attach the rating dynamically for the response
+        teacher.average_rating = round(float(avg_rating), 1) if avg_rating else 0.0
+        top_teachers.append(teacher)
+        
+    return top_teachers

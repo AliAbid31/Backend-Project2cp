@@ -237,21 +237,40 @@ def delete_session(db: Session, session_id: int):
     db.commit()
     return True
 
-def get_sessions_by_teacher(db: Session, teacher_id: int):
-    return db.query(SessionModel).filter(SessionModel.teacher_id == teacher_id).all()     
+def get_sessions_by_teacher(db: Session, teacher_id: int, upcoming_only: bool = False):
+    from datetime import datetime
+    query = db.query(SessionModel).filter(SessionModel.teacher_id == teacher_id)
+    
+    if upcoming_only:
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        query = query.filter(SessionModel.date >= current_date)
+        
+    return query.order_by(SessionModel.date, SessionModel.start_hour).all()
 
-def get_sessions_by_student(db: Session, student_id: int):
+def get_sessions_by_student(db: Session, student_id: int, upcoming_only: bool = False):
     from app.models.students import Student
     from app.models.session import Session as SessionModel
+    from datetime import datetime
+    
     student = db.query(Student).filter(Student.id == student_id).first()        
     if not student:
         return []
     
-    direct_sessions = student.sessions
+    current_date = datetime.now().strftime("%Y-%m-%d") if upcoming_only else None
+    
+    # Filter direct sessions
+    if upcoming_only:
+        direct_sessions = [s for s in student.sessions if s.date >= current_date]
+    else:
+        direct_sessions = student.sessions
+    
     service_ids = [s.id for s in student.services]
     
     if service_ids:
-        service_sessions = db.query(SessionModel).filter(SessionModel.service_id.in_(service_ids)).all()
+        query = db.query(SessionModel).filter(SessionModel.service_id.in_(service_ids))
+        if upcoming_only:
+            query = query.filter(SessionModel.date >= current_date)
+        service_sessions = query.all()
     else:
         service_sessions = []
         
@@ -259,4 +278,7 @@ def get_sessions_by_student(db: Session, student_id: int):
     for s in service_sessions:
         all_sessions_dict[s.id] = s
         
-    return list(all_sessions_dict.values())
+    # Sort sessions by date and then by start hour
+    sorted_sessions = sorted(list(all_sessions_dict.values()), key=lambda x: (x.date, x.start_hour))
+    
+    return sorted_sessions
