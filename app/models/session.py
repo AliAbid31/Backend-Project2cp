@@ -14,9 +14,9 @@ class Session(Base):
   title=Column(String)
   price=Column(Integer)
   
-  service_id=Column(Integer,ForeignKey('services.id'))
+  service_id=Column(Integer,ForeignKey('services.id', ondelete='CASCADE'))
   service=relationship("Service", back_populates="sessions")
-  teacher_id=Column(Integer,ForeignKey('teachers.id'))
+  teacher_id=Column(Integer,ForeignKey('teachers.id', ondelete='CASCADE'))
   teacher=relationship("Teacher", back_populates="sessions")
   students=relationship("Student", secondary=student_session, back_populates="sessions")
   audits=relationship("SessionAudit", back_populates="session")

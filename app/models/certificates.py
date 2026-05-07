@@ -12,5 +12,5 @@ class Certificate(Base):
   title=Column(String)
   
   
-  teacher_id=Column(Integer,ForeignKey('teachers.id'))
+  teacher_id=Column(Integer,ForeignKey('teachers.id', ondelete='CASCADE'))
   teacher=relationship("Teacher", back_populates="certificates")

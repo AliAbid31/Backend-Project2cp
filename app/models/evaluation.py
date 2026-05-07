@@ -10,10 +10,10 @@ class Evaluation(Base):
   comment=Column(String)
   date=Column(String)
   note=Column(Float)
-  teacher_id=Column(Integer, ForeignKey('teachers.id'))
+  teacher_id=Column(Integer, ForeignKey('teachers.id', ondelete='CASCADE'))
   teacher=relationship("Teacher", back_populates="evaluations", foreign_keys=[teacher_id])
   
-  evaluator_id=Column(Integer, ForeignKey('users.id'))
+  evaluator_id=Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
   evaluator=relationship("User", foreign_keys=[evaluator_id])
   
   session_id=Column(Integer, ForeignKey('sessions.id'), nullable=True)  # Session where evaluation occurred

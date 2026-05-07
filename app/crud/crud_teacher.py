@@ -59,9 +59,9 @@ def get_teachers(db:Session):
   return db.query(Teacher).all()
 
 def delete_teacher(db:Session,teacher_email:str,teacher_password:str):
-  teacher = db.query(Teacher).filter(Teacher.email==teacher_email).first()
-  if teacher and password_matches(teacher_password, teacher.password):
-    db.delete(teacher)
+  user = db.query(User).filter(User.email==teacher_email).first()
+  if user and password_matches(teacher_password, user.password):
+    db.delete(user)
     db.commit()
     return True
   return False

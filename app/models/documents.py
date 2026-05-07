@@ -18,9 +18,9 @@ class Document(Base):
   created_at=Column(DateTime, default=datetime.utcnow)
   drive_url=Column(String, nullable=True)
   
-  teacher_id=Column(Integer, ForeignKey('teachers.id'))
-  service_id=Column(Integer, ForeignKey('services.id'), nullable=True)
-  session_id=Column(Integer, ForeignKey('sessions.id'), nullable=True)
+  teacher_id=Column(Integer, ForeignKey('teachers.id', ondelete='CASCADE'))
+  service_id=Column(Integer, ForeignKey('services.id', ondelete='CASCADE'), nullable=True)
+  session_id=Column(Integer, ForeignKey('sessions.id', ondelete='CASCADE'), nullable=True)
   
   teacher=relationship("Teacher", back_populates="documents")
   service=relationship("Service", back_populates="documents")

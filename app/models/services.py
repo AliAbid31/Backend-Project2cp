@@ -21,6 +21,6 @@ class Service(Base):
   
   sessions=relationship("Session", back_populates="service")
   documents=relationship("Document", back_populates="service", cascade="all, delete-orphan")
-  teacher_id=Column(Integer,ForeignKey('teachers.id'))
+  teacher_id=Column(Integer,ForeignKey('teachers.id', ondelete='CASCADE'))
   teacher=relationship("Teacher", back_populates="services")
   students=relationship("Student", secondary=student_service, back_populates="services")

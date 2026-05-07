@@ -8,8 +8,8 @@ from datetime import datetime,timezone
 class Messages(Base):
   __tablename__="messages"
   id=Column(Integer, primary_key=True, index=True)
-  sender_id=Column(Integer,ForeignKey('users.id'), nullable=False)
-  receiver_id=Column(Integer,ForeignKey('users.id'), nullable=False)
+  sender_id=Column(Integer,ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+  receiver_id=Column(Integer,ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
   time= Column(String, nullable=True)
   is_read=Column(Boolean, default=False)
   content=Column(String)

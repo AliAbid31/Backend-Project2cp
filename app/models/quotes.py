@@ -18,6 +18,6 @@ class Quote(Base):
   status=Column(String, default="pending", nullable=True)
   created_at=Column(DateTime, default=datetime.utcnow, nullable=True)
   updated_at=Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True)
-  teacher_id=Column(Integer,ForeignKey('teachers.id'))
+  teacher_id=Column(Integer,ForeignKey('teachers.id', ondelete='CASCADE'))
   teacher=relationship("Teacher", back_populates="quotes")
   students=relationship("Student", secondary=student_quote, back_populates="quotes")

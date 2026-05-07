@@ -31,9 +31,9 @@ def get_students(db:Session):
   return db.query(Student).all()
 
 def delete_student(db:Session,student_email:str,student_password:str):
-  student = db.query(Student).filter(Student.email==student_email).first()
-  if student and password_matches(student_password, student.password):
-    db.delete(student)
+  user = db.query(User).filter(User.email==student_email).first()
+  if user and password_matches(student_password, user.password):
+    db.delete(user)
     db.commit()
     return True
   return False
