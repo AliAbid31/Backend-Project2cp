@@ -146,17 +146,29 @@ def book_multiple_sessions(db: Session, student_id: int, service_id: int, sessio
             raise HTTPException(status_code=400, detail=f"Vous ne pouvez choisir qu'un seule séance pour le jour {s_data.date}")
         selected_dates.add(s_data.date)
 
-        db_sess = SessionModel(
-            date=s_data.date,
-            title=s_data.title,
-            location=s_data.location,
-            start_hour=s_data.start_hour,
-            end_hour=s_data.end_hour,
-            teacher_id=service.teacher_id,
-            service_id=service_id,
-            price=s_data.price,
-            status="Booked"
-        )
+        # Deduplication logic
+        db_sess = None
+        sess_id = getattr(s_data, 'session_id', None)
+        if sess_id:
+            db_sess = db.query(SessionModel).filter(SessionModel.id == sess_id).first()
+            if db_sess:
+                db_sess.status = "Booked"
+                db_sess.title = s_data.title or db_sess.title
+                db_sess.location = s_data.location or db_sess.location
+                db_sess.price = s_data.price or db_sess.price
+
+        if not db_sess:
+            db_sess = SessionModel(
+                date=s_data.date,
+                title=s_data.title,
+                location=s_data.location,
+                start_hour=s_data.start_hour,
+                end_hour=s_data.end_hour,
+                teacher_id=service.teacher_id,
+                service_id=service_id,
+                price=s_data.price,
+                status="Booked"
+            )
         db_sess.students.append(student)
         db.add(db_sess)
         booked_sessions.append(db_sess)
@@ -203,17 +215,32 @@ def book_service_with_validation(db: Session, session_data: SessionCreate, stude
     if service not in student.services:
         student.services.append(service)
 
-    db_session = SessionModel(
-        date=session_data.date,
-        title=session_data.title,
-        location=session_data.location,
-        start_hour=session_data.start_hour,
-        end_hour=session_data.end_hour,
-        teacher_id=service.teacher_id,
-        service_id=service_id,
-        price=session_data.price,
-        status="Booked"
-    )
+    # Logic for deduplication: use existing session if provided
+    db_session = None
+    sess_id = getattr(session_data, 'session_id', None)
+    if sess_id:
+        db_session = db.query(SessionModel).filter(SessionModel.id == sess_id).first()
+        if db_session:
+            # Update existing session instead of creating a new one
+            db_session.status = "Booked"
+            # Sync fields in case they changed
+            db_session.title = session_data.title
+            db_session.location = session_data.location
+            db_session.price = session_data.price
+    
+    if not db_session:
+        # Create a new session only if no existing one was found/provided
+        db_session = SessionModel(
+            date=session_data.date,
+            title=session_data.title,
+            location=session_data.location,
+            start_hour=session_data.start_hour,
+            end_hour=session_data.end_hour,
+            teacher_id=service.teacher_id,
+            service_id=service_id,
+            price=session_data.price,
+            status="Booked"
+        )
     
     db_session.students.append(student)
     
@@ -275,9 +302,22 @@ def get_sessions_by_student(db: Session, student_id: int, upcoming_only: bool = 
     else:
         service_sessions = []
         
-    all_sessions_dict = {s.id: s for s in direct_sessions}
-    for s in service_sessions:
+    all_sessions_dict = {}
+    
+    # Priority 1: Direct sessions (linked to student). These are definitely relevant.
+    for s in direct_sessions:
         all_sessions_dict[s.id] = s
+        
+    # Priority 2: Service sessions.
+    # We only add them if no direct session already exists for the same time slot and service.
+    # This prevents duplicates when an availability slot and a booking both exist.
+    seen_slots = {(s.date, s.start_hour, s.service_id) for s in direct_sessions}
+    
+    for s in service_sessions:
+        slot_key = (s.date, s.start_hour, s.service_id)
+        if s.id not in all_sessions_dict and slot_key not in seen_slots:
+            all_sessions_dict[s.id] = s
+            seen_slots.add(slot_key)
         
     # Sort sessions by date and then by start hour
     sorted_sessions = sorted(list(all_sessions_dict.values()), key=lambda x: (x.date, x.start_hour))

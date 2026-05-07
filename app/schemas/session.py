@@ -15,6 +15,7 @@ class SessionBase(BaseModel):
   date:str
   price:int
   service_id: Optional[int] = None
+  session_id: Optional[int] = None
 
 class SessionCreate(SessionBase):
   teacher_id:int
