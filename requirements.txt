@@ -1,4 +1,6 @@
 psycopg2-binary==2.9.9
+slowapi==0.1.9
+pypdf==5.1.0
 fastapi==0.119.1
 uvicorn==0.38.0
 SQLAlchemy==2.0.46
@@ -51,3 +53,6 @@ PyJWT==2.10.1
 bcrypt==4.1.2
 twilio==9.10.6
 google-generativeai==0.7.2
+google-api-python-client==2.155.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0

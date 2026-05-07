@@ -1,6 +1,5 @@
 from __future__ import annotations
 from datetime import datetime
-from turtle import title
 
 from pydantic import BaseModel, EmailStr
 from app.schemas.session_audit import SessionAuditOut
