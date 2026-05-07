@@ -166,6 +166,7 @@ def smart_search(
 
     raw_results = query_db.all()
     for service in raw_results:
+      teacher = db.query(Teacher).filter(Teacher.id == service.teacher_id).first()
       service_data = {
         "id": service.id,
         "name": service.name,
@@ -175,6 +176,9 @@ def smart_search(
         "price": service.price,
         "duration": service.duration,
         "teacher_id": service.teacher_id,
+        "teacher_name": teacher.full_name if teacher else "Teacher",
+        "education_mode": teacher.location_mode if teacher else "Onsite",
+        "geo_coordinates": teacher.geo_coordinates if teacher else None,
       }
       results.append(service_data)
 
