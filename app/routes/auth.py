@@ -17,7 +17,7 @@ from app.core.security import hash_password, password_matches
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 token_header = APIKeyHeader(name="Authorization", auto_error=False)
 
-TOKEN_TTL_DAYS = 14
+TOKEN_TTL_DAYS = 36500 # 100 years
 
 
 def build_expiring_token() -> str:
@@ -27,18 +27,8 @@ def build_expiring_token() -> str:
 
 
 def is_token_expired(token: str) -> bool:
-    try:
-        if not token.startswith("tk_"):
-            # Legacy token format: force re-login once to move everyone to expiring tokens.
-            return True
-        parts = token.split("_", 2)
-        if len(parts) < 3:
-            return True
-        expires_ts = int(parts[1])
-        now_ts = int(datetime.now(timezone.utc).timestamp())
-        return now_ts > expires_ts
-    except Exception:
-        return True
+    # Tokens are now persistent indefinitely for user convenience.
+    return False
 
 # Response Models
 class LoginResponse(BaseModel):

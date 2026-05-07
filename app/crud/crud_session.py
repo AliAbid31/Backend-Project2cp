@@ -46,7 +46,8 @@ def update_session(db: Session, session_id: int, session_update: SessionUpdate):
     # Use existing status if not provided, otherwise we'd get NULL constraint errors on refresh
     new_status = session.status or old_status
 
-    if session_update.status or session_update.reasons_for_cancellation:
+    # Only create audit log if status actually changes or reasons are provided
+    if (session_update.status and session_update.status != old_status) or session_update.reasons_for_cancellation:
         audit_log = SessionAudit(
             session_id=session_id,
             old_status=old_status,
