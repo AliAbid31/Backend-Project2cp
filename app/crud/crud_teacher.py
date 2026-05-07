@@ -90,7 +90,13 @@ def modify_profile(db: Session, bio: str, domain: str, subject: str, teachinglev
     teacher.subject = subject
     teacher.teachinglevel = teachinglevel
     teacher.location_mode = education_mode
-    teacher.postal_address = postal_address
+    if teacher.postal_address != postal_address:
+      teacher.postal_address = postal_address
+      # Automatically update coordinates if address changed
+      coords = get_lat_lng_from_address(postal_address)
+      if coords:
+        teacher.geo_coordinates = f"{coords[0]},{coords[1]}"
+    
     if profile_picture is not None:
       teacher.profile_picture = profile_picture
     db.add(teacher)
