@@ -13,7 +13,10 @@ class User(Base):
   password=Column(String)
   token=Column(String)
   status=Column(String, default="active")  
-  notifications=relationship("Notification", back_populates="user")
+  notifications=relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+  sent_messages = relationship("Messages", foreign_keys="[Messages.sender_id]", cascade="all, delete-orphan", passive_deletes=True)
+  received_messages = relationship("Messages", foreign_keys="[Messages.receiver_id]", cascade="all, delete-orphan", passive_deletes=True)
+  reports_made = relationship("Report", foreign_keys="[Report.reporter_id]", cascade="all, delete-orphan", passive_deletes=True)
   type=Column(String(50))
 
   __mapper_args__ = {

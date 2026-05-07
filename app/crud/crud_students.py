@@ -31,8 +31,33 @@ def get_students(db:Session):
   return db.query(Student).all()
 
 def delete_student(db:Session,student_email:str,student_password:str):
+  from app.models.messages import Messages
+  from app.models.notifications import Notification
+  from app.models.report import Report
+  from app.models.evaluation import Evaluation
+
   user = db.query(User).filter(User.email==student_email).first()
   if user and password_matches(student_password, user.password):
+    student_id = user.id
+    from app.models.students import Student
+    student = db.query(Student).filter(Student.id == student_id).first()
+    
+    if student:
+      # Clear associations (SQLAlchemy handles the association tables if we clear the lists)
+      student.sessions = []
+      student.services = []
+      student.quotes = []
+      student.documents = []
+      student.teacher = []
+      db.add(student)
+      db.flush()
+
+    # Delete records where student is involved
+    db.query(Report).filter((Report.student_id == student_id) | (Report.reporter_id == student_id)).delete(synchronize_session=False)
+    db.query(Evaluation).filter(Evaluation.evaluator_id == student_id).delete(synchronize_session=False)
+    db.query(Messages).filter((Messages.sender_id == student_id) | (Messages.receiver_id == student_id)).delete(synchronize_session=False)
+    db.query(Notification).filter(Notification.user_id == student_id).delete(synchronize_session=False)
+
     db.delete(user)
     db.commit()
     return True

@@ -16,5 +16,5 @@ class Evaluation(Base):
   evaluator_id=Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
   evaluator=relationship("User", foreign_keys=[evaluator_id])
   
-  session_id=Column(Integer, ForeignKey('sessions.id'), nullable=True)  # Session where evaluation occurred
+  session_id=Column(Integer, ForeignKey('sessions.id', ondelete='CASCADE'), nullable=True)  # Session where evaluation occurred
   

@@ -12,7 +12,7 @@ class Report(Base):
   reason=Column(String)
   screenshot_path=Column(String)
   reporter_id=Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
-  reporter=relationship("User", foreign_keys=[reporter_id])
+  reporter=relationship("User", foreign_keys=[reporter_id], back_populates="reports_made")
   teacher_id=Column(Integer, ForeignKey('teachers.id', ondelete='CASCADE'), nullable=True)
   student_id=Column(Integer, ForeignKey('students.id', ondelete='CASCADE'), nullable=True)
   evaluation_id=Column(Integer, ForeignKey('evaluations.id'), nullable=True)

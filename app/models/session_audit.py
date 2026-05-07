@@ -5,7 +5,7 @@ from app.database.database import Base
 class SessionAudit(Base):
   __tablename__="session_audit"
   id=Column(Integer,primary_key=True,index=True)
-  session_id=Column(Integer,ForeignKey('sessions.id'))
+  session_id=Column(Integer,ForeignKey('sessions.id', ondelete='CASCADE'))
   old_status=Column(String)
   new_status=Column(String)
   reasons_for_cancellation=Column(String,nullable=False)

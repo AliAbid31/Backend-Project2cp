@@ -59,8 +59,64 @@ def get_teachers(db:Session):
   return db.query(Teacher).all()
 
 def delete_teacher(db:Session,teacher_email:str,teacher_password:str):
+  from app.models.services import Service
+  from app.models.session import Session
+  from app.models.certificates import Certificate
+  from app.models.quotes import Quote
+  from app.models.evaluation import Evaluation
+  from app.models.documents import Document
+  from app.models.report import Report
+  from app.models.messages import Messages
+  from app.models.notifications import Notification
+  from app.models.session_audit import SessionAudit
+
   user = db.query(User).filter(User.email==teacher_email).first()
   if user and password_matches(teacher_password, user.password):
+    teacher_id = user.id
+    
+    # 1. Gather IDs
+    teacher_sessions = db.query(Session).filter(Session.teacher_id == teacher_id).all()
+    session_ids = [s.id for s in teacher_sessions]
+    
+    teacher_services = db.query(Service).filter(Service.teacher_id == teacher_id).all()
+    service_ids = [s.id for s in teacher_services]
+
+    # 2. Clear Associations (Many-to-Many)
+    from app.models.association_teacher_student import teacher_student
+    from app.models.association_student_session import student_session
+    from app.models.association_student_service import student_service
+    from app.models.association_student_document import student_document
+    from app.models.association_student_quote import student_quote
+
+    db.execute(teacher_student.delete().where(teacher_student.c.teacher_id == teacher_id))
+    if session_ids:
+        db.execute(student_session.delete().where(student_session.c.session_id.in_(session_ids)))
+    if service_ids:
+        db.execute(student_service.delete().where(student_service.c.service_id.in_(service_ids)))
+
+    # 3. Delete linked records in CORRECT ORDER (children first)
+    # Documents reference Teacher, Service, and Session
+    db.query(Document).filter(Document.teacher_id == teacher_id).delete(synchronize_session=False)
+    
+    # SessionAudits reference Session
+    if session_ids:
+        db.query(SessionAudit).filter(SessionAudit.session_id.in_(session_ids)).delete(synchronize_session=False)
+    
+    # Sessions reference Service and Teacher
+    db.query(Session).filter(Session.teacher_id == teacher_id).delete(synchronize_session=False)
+    
+    # Services reference Teacher
+    db.query(Service).filter(Service.teacher_id == teacher_id).delete(synchronize_session=False)
+    
+    # Other independent records
+    db.query(Evaluation).filter((Evaluation.teacher_id == teacher_id) | (Evaluation.evaluator_id == teacher_id)).delete(synchronize_session=False)
+    db.query(Report).filter((Report.teacher_id == teacher_id) | (Report.reporter_id == teacher_id)).delete(synchronize_session=False)
+    db.query(Certificate).filter(Certificate.teacher_id == teacher_id).delete(synchronize_session=False)
+    db.query(Quote).filter(Quote.teacher_id == teacher_id).delete(synchronize_session=False)
+    db.query(Messages).filter((Messages.sender_id == teacher_id) | (Messages.receiver_id == teacher_id)).delete(synchronize_session=False)
+    db.query(Notification).filter(Notification.user_id == teacher_id).delete(synchronize_session=False)
+
+    # 4. Finally delete the user
     db.delete(user)
     db.commit()
     return True

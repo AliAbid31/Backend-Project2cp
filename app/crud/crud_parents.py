@@ -68,9 +68,18 @@ def get_parents(db:Session):
   return db.query(Parent).options(selectinload(Parent.students)).all()
 
 def delete_parent(db:Session,parent_username:str,parent_password:str):
-  parent = db.query(Parent).filter(Parent.username==parent_username).first()
-  if parent and password_matches(parent_password, parent.password):
-    db.delete(parent)
+  from app.models.messages import Messages
+  from app.models.notifications import Notification
+
+  user = db.query(User).filter((User.full_name==parent_username) | (User.email==parent_username)).first()
+  if user and password_matches(parent_password, user.password):
+    parent_id = user.id
+    
+    # Delete independent records
+    db.query(Messages).filter((Messages.sender_id == parent_id) | (Messages.receiver_id == parent_id)).delete(synchronize_session=False)
+    db.query(Notification).filter(Notification.user_id == parent_id).delete(synchronize_session=False)
+
+    db.delete(user)
     db.commit()
     return True
   return False
@@ -78,8 +87,3 @@ def delete_parent(db:Session,parent_username:str,parent_password:str):
 def delete_all_parents(db:Session):
   db.query(Parent).delete()
   db.commit()
-
-
-
-
-

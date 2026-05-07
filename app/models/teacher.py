@@ -22,16 +22,16 @@ class Teacher(User):
   payment_method=Column(String)
   payment_info=Column(String)
 
-  quotes=relationship("Quote", back_populates="teacher")
-  services=relationship("Service", back_populates="teacher")
-  sessions=relationship("Session", back_populates="teacher")
-  documents=relationship("Document", back_populates="teacher")
-  evaluations=relationship("Evaluation", back_populates="teacher")
+  quotes=relationship("Quote", back_populates="teacher", cascade="all, delete-orphan", passive_deletes=True)
+  services=relationship("Service", back_populates="teacher", cascade="all, delete-orphan", passive_deletes=True)
+  sessions=relationship("Session", back_populates="teacher", cascade="all, delete-orphan", passive_deletes=True)
+  documents=relationship("Document", back_populates="teacher", cascade="all, delete-orphan", passive_deletes=True)
+  evaluations=relationship("Evaluation", back_populates="teacher", foreign_keys="[Evaluation.teacher_id]", cascade="all, delete-orphan", passive_deletes=True)
   students=relationship("Student",secondary=teacher_student, back_populates="teacher")
-  certificates=relationship("Certificate", back_populates="teacher")
+  certificates=relationship("Certificate", back_populates="teacher", cascade="all, delete-orphan", passive_deletes=True)
   subjects=relationship("Subject", secondary=teacher_subjects, back_populates="teachers")
   levels=relationship("TeachingLevel", secondary=teacher_levels, back_populates="teachers")
-  received_reports=relationship("Report", back_populates="teacher", foreign_keys="Report.teacher_id")
+  received_reports=relationship("Report", back_populates="teacher", foreign_keys="[Report.teacher_id]", cascade="all, delete-orphan", passive_deletes=True)
 
   __mapper_args__ = {
         'polymorphic_identity': 'Teacher',
