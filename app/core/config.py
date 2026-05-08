@@ -30,7 +30,7 @@ class Settings(BaseSettings):
   email_address: str = ""
   email_password: str = ""
   sender_name: str = "TutoratUp"
-  enable_email_debug: bool = False
+  enable_email_debug: bool = True
   max_email_retries: int = 3
 
   # Security Configuration

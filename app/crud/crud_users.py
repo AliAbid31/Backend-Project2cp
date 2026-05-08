@@ -1,20 +1,10 @@
 from sqlalchemy.orm import Session
 from app.models.users import User
 from app.models.password_reset import PasswordReset
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from datetime import timedelta, datetime
+from app.services.email_service import _send_email_base, generate_otp, ENABLE_EMAIL_DEBUG
 import secrets
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import os
-
-SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS", "")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
-SENDER_NAME = os.getenv("SENDER_NAME", "TutoratUp")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 def get_user_by_email(db: Session, email: str) -> User:
     return db.query(User).filter(User.email == email).first()
@@ -23,7 +13,7 @@ def authenticate_user(db: Session, email: str, password: str) -> User:
     user = get_user_by_email(db, email)
     if not user or user.password != password:
         return None
-    
+
     token = secrets.token_hex(32)
     user.token = token
     db.add(user)
@@ -31,26 +21,20 @@ def authenticate_user(db: Session, email: str, password: str) -> User:
     db.refresh(user)
     return user
 
-def forgot_password_logic(db: Session, email: str) -> bool:
+def forgot_password_logic(db: Session, email: str, background_tasks: BackgroundTasks) -> bool:
     user = get_user_by_email(db, email)
     if not user:
         return False
 
-    import random
-    otp_code = str(random.randint(1000, 9999))
+    otp_code = generate_otp(4)
     expires = datetime.utcnow() + timedelta(hours=1)
-    
+
     db.query(PasswordReset).filter(PasswordReset.email == email).delete()
-    
+
     reset_request = PasswordReset(email=email, token=otp_code, expires=expires)
     db.add(reset_request)
     db.commit()
-    
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Reset Password Code - TutoratUp"
-    msg["From"] = f"{SENDER_NAME} <{EMAIL_ADDRESS}>"
-    msg["To"] = email
-    
+
     html = f"""
     <html>
         <body style='text-align:center; font-family: Arial, sans-serif;'>
@@ -62,22 +46,13 @@ def forgot_password_logic(db: Session, email: str) -> bool:
         </body>
     </html>
     """
-    msg.attach(MIMEText(html, "html"))
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-        print("[FORGOT PASSWORD] SMTP credentials not configured - simulating success")
-        return True
+    background_tasks.add_task(_send_email_base, email, "Reset Password Code - TutoratUp", html)
 
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            server.sendmail(EMAIL_ADDRESS, email, msg.as_string())
-        return True
-    except Exception as e:
-        print(f"[FORGOT PASSWORD] SMTP Error: {e}")
-        print("[FORGOT PASSWORD] SMTP failed - simulating success for security")
-        return True
+    if ENABLE_EMAIL_DEBUG:
+        print(f"[FORGOT PASSWORD DEBUG] OTP for {email}: {otp_code}")
+
+    return True
 
 def verify_reset_code(db: Session, email: str, otp_code: str) -> bool:
     reset_request = db.query(PasswordReset).filter(

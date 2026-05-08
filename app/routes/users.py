@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database.database import get_db
@@ -50,8 +50,8 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     }
 
 @router.post("/forgot-password")
-def forgot_password_endpoint(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    success = crud_users.forgot_password_logic(db, request.email.lower().strip())
+def forgot_password_endpoint(request: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    success = crud_users.forgot_password_logic(db, request.email.lower().strip(), background_tasks)
     if not success:
         raise HTTPException(status_code=400, detail="Email not found")
     return {"message": "If this email is registered, a reset code has been sent"}
