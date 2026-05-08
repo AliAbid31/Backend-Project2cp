@@ -7,6 +7,7 @@ from app.schemas.users import ForgotPasswordRequest, ResetPassword
 from app.routes.autth1 import get_current_user
 from app.models.users import User
 import secrets
+import os
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -50,10 +51,16 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     }
 
 @router.post("/forgot-password")
-def forgot_password_endpoint(request: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    success = crud_users.forgot_password_logic(db, request.email.lower().strip(), background_tasks)
-    if not success:
-        raise HTTPException(status_code=400, detail="Email not found")
+def forgot_password_endpoint(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    result = crud_users.forgot_password_logic(db, request.email.lower().strip())
+    if not result["success"]:
+        if not result["email_exists"]:
+            raise HTTPException(status_code=404, detail="Email not found")
+        raise HTTPException(status_code=400, detail="Failed to send reset code")
+
+    otp_for_dev = os.getenv("DEV_MODE", "false").lower() == "true"
+    if otp_for_dev and "otp_code" in result:
+        return {"message": "If this email is registered, a reset code has been sent", "otp_code": result["otp_code"]}
     return {"message": "If this email is registered, a reset code has been sent"}
 
 class VerifyResetCodeRequest(BaseModel):

@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.users import User
 from app.models.password_reset import PasswordReset
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException
 from datetime import timedelta, datetime
-from app.services.email_service import _send_email_base, generate_otp, ENABLE_EMAIL_DEBUG
 import secrets
 
 def get_user_by_email(db: Session, email: str) -> User:
@@ -21,12 +20,13 @@ def authenticate_user(db: Session, email: str, password: str) -> User:
     db.refresh(user)
     return user
 
-def forgot_password_logic(db: Session, email: str, background_tasks: BackgroundTasks) -> bool:
+def forgot_password_logic(db: Session, email: str) -> dict:
+    import random
     user = get_user_by_email(db, email)
     if not user:
-        return False
+        return {"success": False, "email_exists": False}
 
-    otp_code = generate_otp(4)
+    otp_code = str(random.randint(1000, 9999))
     expires = datetime.utcnow() + timedelta(hours=1)
 
     db.query(PasswordReset).filter(PasswordReset.email == email).delete()
@@ -35,24 +35,7 @@ def forgot_password_logic(db: Session, email: str, background_tasks: BackgroundT
     db.add(reset_request)
     db.commit()
 
-    html = f"""
-    <html>
-        <body style='text-align:center; font-family: Arial, sans-serif;'>
-            <h2>Reset Your Password</h2>
-            <p>You have requested to reset your password for your TutoratUp account.</p>
-            <p>Here is your 4-digit verification code:</p>
-            <h1 style='background:#f4f4f4;color:#333;padding:12px 24px;border-radius:5px;display:inline-block;letter-spacing:4px;'>{otp_code}</h1>
-            <p style='margin-top:20px; color:#666;'>This code will expire in one hour.</p>
-        </body>
-    </html>
-    """
-
-    background_tasks.add_task(_send_email_base, email, "Reset Password Code - TutoratUp", html)
-
-    if ENABLE_EMAIL_DEBUG:
-        print(f"[FORGOT PASSWORD DEBUG] OTP for {email}: {otp_code}")
-
-    return True
+    return {"success": True, "email_exists": True, "otp_code": otp_code}
 
 def verify_reset_code(db: Session, email: str, otp_code: str) -> bool:
     reset_request = db.query(PasswordReset).filter(
