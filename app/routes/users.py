@@ -51,15 +51,28 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/forgot-password")
 def forgot_password_endpoint(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    crud_users.forgot_password_logic(db, request.email.lower().strip())
-    return {"message": "If this email is registered, a reset link will be sent"}
+    success = crud_users.forgot_password_logic(db, request.email.lower().strip())
+    if not success:
+        raise HTTPException(status_code=400, detail="Email not found")
+    return {"message": "If this email is registered, a reset code has been sent"}
 
-@router.post("/reset-password/{token}")
-def reset_password_endpoint(token: str, request: ResetPassword, db: Session = Depends(get_db)):
+class VerifyResetCodeRequest(BaseModel):
+    email: str
+    otp_code: str
+
+@router.post("/verify-reset-code")
+def verify_reset_code_endpoint(request: VerifyResetCodeRequest, db: Session = Depends(get_db)):
+    success = crud_users.verify_reset_code(db, request.email.lower().strip(), request.otp_code)
+    if success:
+        return {"success": True, "message": "Code verified"}
+    raise HTTPException(status_code=400, detail="Invalid or expired code")
+
+@router.post("/reset-password")
+def reset_password_endpoint(request: ResetPassword, db: Session = Depends(get_db)):
     if request.new_password != request.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
     
-    success = crud_users.reset_password_logic(db, token, request.new_password)
+    success = crud_users.reset_password_logic(db, request.email.lower().strip(), request.otp_code, request.new_password)
     if success:
         return {"message": "Password reset successfully"}
     raise HTTPException(status_code=400, detail="Invalid token or user not found")

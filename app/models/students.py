@@ -16,12 +16,12 @@ class Student(User):
   educational_level=Column(String)
   parent_id=Column(Integer, ForeignKey('parents.id'))
   parent=relationship("Parent", back_populates="students", foreign_keys=[parent_id])
-  teacher=relationship("Teacher",secondary=teacher_student, back_populates="students", cascade="all")
-  quotes=relationship("Quote",secondary=student_quote, back_populates="students", cascade="all")
-  sessions=relationship("Session",secondary=student_session, back_populates="students", cascade="all")
-  services=relationship("Service", secondary=student_service, back_populates="students", cascade="all")
-  documents=relationship("Document", secondary=student_document, back_populates="students", cascade="all")
-  received_reports=relationship("Report", back_populates="student", foreign_keys="Report.student_id")
+  teacher=relationship("Teacher",secondary=teacher_student, back_populates="students", passive_deletes=True)
+  quotes=relationship("Quote",secondary=student_quote, back_populates="students", passive_deletes=True)
+  sessions=relationship("Session",secondary=student_session, back_populates="students", passive_deletes=True)
+  services=relationship("Service", secondary=student_service, back_populates="students", passive_deletes=True)
+  documents=relationship("Document", secondary=student_document, back_populates="students", passive_deletes=True)
+  received_reports=relationship("Report", back_populates="student", foreign_keys="[Report.student_id]", cascade="all, delete-orphan", passive_deletes=True)
 
   __mapper_args__ = {
         'polymorphic_identity': 'Student',

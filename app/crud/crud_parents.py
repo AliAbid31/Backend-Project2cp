@@ -87,3 +87,8 @@ def delete_parent(db:Session,parent_username:str,parent_password:str):
 def delete_all_parents(db:Session):
   db.query(Parent).delete()
   db.commit()
+
+
+
+
+
