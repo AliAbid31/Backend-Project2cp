@@ -9,7 +9,6 @@ from app.core.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.get_database_url
 
-# Create the Engine with better connection handling
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     poolclass=QueuePool,
@@ -19,7 +18,6 @@ engine = create_engine(
     pool_recycle=300,
     connect_args={
         "connect_timeout": 10,
-        "options": "-c statement_timeout=30000"
     }
 )
 
@@ -40,7 +38,6 @@ def get_db():
 if __name__ == "__main__":
     try:
         with engine.connect() as connection:
-            print("✅ Connected to PostgreSQL successfully!")
+            print("Connected to PostgreSQL successfully!")
     except Exception as e:
-        print("❌ Connection failed. Check if pgAdmin has the database 'tutorly_db' created.")
-        print(f"Error details: {e}")
+        print(f"Connection failed: {e}")
