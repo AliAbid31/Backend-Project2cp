@@ -32,6 +32,12 @@ def _send_forgot_password_email(email: str, otp_code: str) -> tuple[bool, str]:
     email_password = os.getenv("EMAIL_PASSWORD", "")
     sender_name = os.getenv("SENDER_NAME", "TutoratUp")
 
+    print(f"[FORGOT PASSWORD] Attempting to send email...")
+    print(f"[FORGOT PASSWORD] SMTP Server: {smtp_server}:{smtp_port}")
+    print(f"[FORGOT PASSWORD] From: {email_address}")
+    print(f"[FORGOT PASSWORD] To: {email}")
+    print(f"[FORGOT PASSWORD] Has password: {'Yes' if email_password else 'No'}")
+
     if not email_address or not email_password:
         print(f"[FORGOT PASSWORD] No email credentials. OTP for {email}: {otp_code}")
         return False, "Email credentials not configured"
