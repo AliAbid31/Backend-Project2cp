@@ -57,7 +57,14 @@ def forgot_password_endpoint(request: ForgotPasswordRequest, db: Session = Depen
         if not result["email_exists"]:
             raise HTTPException(status_code=404, detail="Email not found")
         raise HTTPException(status_code=400, detail="Failed to send reset code")
-    return {"message": "If this email is registered, a reset code has been sent"}
+
+    response = {"message": "If this email is registered, a reset code has been sent"}
+
+    enable_debug = os.getenv("ENABLE_EMAIL_DEBUG", "false").lower() == "true"
+    if enable_debug and "otp_code" in result:
+        response["otp_code"] = result["otp_code"]
+
+    return response
 
 class VerifyResetCodeRequest(BaseModel):
     email: str
